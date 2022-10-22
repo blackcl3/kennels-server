@@ -1,6 +1,12 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from views import get_all_animals, get_single_animal, create_animal, delete_animal, update_animal
+from views import (get_all_animals,
+                   get_single_animal,
+                   create_animal,
+                   delete_animal,
+                   update_animal,
+                   get_animal_by_location,
+                   get_animal_by_status)
 from views import (get_all_customers,
                    get_single_customer,
                    create_customer,
@@ -11,7 +17,8 @@ from views import (get_all_employees,
                    get_single_employee,
                    create_employee,
                    delete_employee,
-                   update_employee)
+                   update_employee,
+                   get_employee_by_location)
 from views import (get_all_locations,
                    get_single_location,
                    create_location,
@@ -102,13 +109,32 @@ class HandleRequests(BaseHTTPRequestHandler):
                     response = f"{get_single_customer(id)}"
                 else:
                     response = f"{get_all_customers()}"
+            elif resource == "employees":
+                if id is not None:
+                    response = f"{get_single_employee(id)}"
+                else:
+                    response = f"{get_all_employees()}"
+            elif resource == "locations":
+                if id is not None:
+                    response = f"{get_single_location(id)}"
+                else:
+                    response = f"{get_all_locations()}"
 
         else: # There is a ? in the path, run the query param functions
             (resource, query) = parsed
             # see if the query dictionary has an email key
             if query.get('email') and resource == 'customers':
                 response = get_customer_by_email(query['email'][0])
-
+            # see if the query dictionary has a location key
+            if query.get('location_id') and resource == 'animals':
+                response = get_animal_by_location(query['location_id'][0])
+            if query.get('status') and resource == 'animals':
+                response = get_animal_by_status(query['status'][0])
+            # see if the query dictionary has a location key
+            if query.get('location_id') and resource == 'employees':
+                response = get_employee_by_location(query['location_id'][0])
+            
+                
         self.wfile.write(response.encode())
 
     # Here's a method on the class that overrides the parent's method.
