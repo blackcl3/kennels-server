@@ -18,6 +18,7 @@ from .employee_requests import (
     update_employee)
 from .customer_requests import (
     get_all_customers,
+    get_customer_by_email,
     get_single_customer,
     create_customer,
     delete_customer,
